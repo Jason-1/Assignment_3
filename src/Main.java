@@ -103,8 +103,12 @@ public class Main {
             {
                 words = line.split("");
 
+                //reset the FSM for the next line of input
+                FSMLocation = 0;
+
                 for(int i = 0; i<words.length; i++)
                 {
+
                     //first check if this is the final state
                     if(next1[FSMLocation] == 0)
                     {
@@ -118,6 +122,7 @@ public class Main {
                     else if(FSMLocation == 0)
                     {
                         boolean literal = false;
+
                         //while current state is not a literal (i.e. not yet found the first possible letter)
                         while(!literal)
                         {
@@ -163,7 +168,11 @@ public class Main {
                     //general case
                     else
                     {
-                        System.out.println(words[i]);
+
+
+
+
+                        //System.out.println(words[i]);
                     }
                 }
 
@@ -185,6 +194,3 @@ public class Main {
         }
     }
 }
-
-
-
