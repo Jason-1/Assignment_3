@@ -1,7 +1,12 @@
+//1288205
+//1210259
+
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
-public class Main {
+public class REsearch {
 
     int finalState;
 
@@ -9,8 +14,8 @@ public class Main {
     {
         try
         {
-            Main REsearch = new Main();
-            REsearch.run(args);
+            REsearch REs = new REsearch();
+            REs.run(args);
         }
         catch (Exception e)
         {
@@ -29,7 +34,8 @@ public class Main {
         int arrayCounter;
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader("Input.txt"));
+            BufferedReader br = new BufferedReader(new FileReader(args[0]));
+			BufferedWriter writer = new BufferedWriter(new FileWriter("Output.txt"));
             String s;
             String[] w;
             int last = 0;
@@ -121,7 +127,7 @@ public class Main {
             int int1,int2;
             boolean success = false;
             DEque.Node currentState;
-            BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+            BufferedReader reader = new BufferedReader(new FileReader(args[1]));
             while((line = reader.readLine()) != null)
             {
                 words = line.split("");
@@ -136,7 +142,7 @@ public class Main {
 
                 //first state, make first possible state
                 queue.addToFront(FSMLocation, next1[FSMLocation], next2[FSMLocation], inputSymbol[FSMLocation]);
-
+                currentState = null;
 
                 ///MAIN LOOP
                 while(!success)
@@ -147,91 +153,23 @@ public class Main {
                     {
                         //reached end of FSM, found match, print current line
                         System.out.println(line);
+						writer.write(line + System.lineSeparator());
                         success = true;
                     }
                     //if run out of input
                     else if(arrayLocation >= words.length)
                     {
+                        if(currentState.n1 == 0 && currentState.n2 == 0)
+                        {
+                            success = true;
+                        }
                         break;
                     }
-
-
-
-                    //find the next match
-  /*                  else
-                    {
-
-                        //first check then current state
-
-                        //if there is a current state
-                        if(!queue.first.symbol.equals("SCAN"))
-                        {
-                            currentState = queue.removeFirst();
-                            FSMLocation = currentState.state;
-                        }
-
-
-                        //there is no current state
-                        //pop the first possible next state and make it the current state
-                        else
-                        {
-
-                            currentState = queue.removeLast();
-                            FSMLocation = currentState.state;
-
-                            //add the other possible state as the other possible current state
-                            if(!queue.last.symbol.equals("SCAN"))
-                            {
-                                DEque.Node node = queue.removeLast();
-                                queue.addToFront(node.state,node.n1,node.n2,node.symbol);
-                            }
-
-
-                        }
-
-
-
-
-                    }*/
-
-
-
-
-
-
-
-                    //first check if this is the final state
-
-
-
-
-
-
 
                     //find next match
                     else
                     {
 
-                        /*if(queue.first.symbol.equals("SCAN"))
-                        {
-                            //need to go back a character
-                          //  if(queue.last.symbol.equals("SCAN"))
-                          //  {
-                          //      arrayLocation--;
-                          //      queue.addToEnd(next2[FSMLocation],next1[next2[FSMLocation]],next2[next2[FSMLocation]],inputSymbol[next2[FSMLocation]]);
-                           // }
-
-
-                            currentState = queue.removeLast();
-                            FSMLocation = currentState.state;
-
-                        }
-                        else
-                        {
-                            currentState = queue.removeFirst();
-                            //System.out.println(currentState.state);
-                            FSMLocation = currentState.state;
-                        }*/
                         //if there is a current state
                         if(!queue.first.symbol.equals("SCAN"))
                         {
@@ -256,6 +194,11 @@ public class Main {
                             }
 
 
+                        }
+
+                        if(currentState.n1 == -1 || currentState.n2 == -1)
+                        {
+                            break;
                         }
 
 
@@ -274,14 +217,12 @@ public class Main {
 
 
 
-                            //if this current state matches
-                            if(currentState.symbol.equals(words[arrayLocation]))
+                            //if this current state matches or is a free character
+                            if(currentState.symbol.equals(words[arrayLocation]) || currentState.symbol.equals(" "))
                             {
                                 FSMLocation = currentState.n1;
                                 queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
-                                //System.out.println("YAY");
                             }
-
 
 
                             //if this current state does not match
@@ -294,32 +235,43 @@ public class Main {
 
                                     arrayLocation--;
 
-                                    //if the element before matches
-                                 // if(currentState.symbol.equals(words[arrayLocation]))
-                                  //  {
-                                  //      arrayLocation--;
-                                   //     currentState = queue.removeLast();
-                                   // }
 
                                 }
                                 //if this is the first state, check each symbol until we find a start state
-                                while (currentState.state == 0 && queue.first.symbol.equals("SCAN") && queue.last.symbol.equals("SCAN"))
+                                else
                                 {
-                                    arrayLocation++;
-
-                                    if(arrayLocation>=words.length)
+                                    //if
+                                    if(currentState.state == startState && queue.first.symbol.equals("SCAN") && queue.last.symbol.equals("SCAN"))
                                     {
-                                        break;
+                                        while (currentState.state == startState && queue.first.symbol.equals("SCAN") && queue.last.symbol.equals("SCAN"))
+                                        {
+                                            arrayLocation++;
+
+                                            if(arrayLocation>=words.length)
+                                            {
+                                                break;
+                                            }
+
+                                            if(words[arrayLocation].equals(currentState.symbol))
+                                            {
+
+                                                FSMLocation = next1[FSMLocation];
+                                                queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
+
+                                            }
+                                        }
                                     }
-
-                                    if(words[arrayLocation].equals(currentState.symbol))
+                                    else
                                     {
-
-                                        FSMLocation = next1[FSMLocation];
-                                        queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
-
+                                        //mismatched start
+                                        //move one along the array and forget about progress so far
+                                        //arrayLocation++;
+                                        queue = new DEque();
+                                        FSMLocation = startState;
+                                        queue.addToFront(FSMLocation, next1[FSMLocation], next2[FSMLocation], inputSymbol[FSMLocation]);
                                     }
                                 }
+
 
 
                             }
@@ -341,7 +293,7 @@ public class Main {
                             {
                                 arrayLocation--;
                                 queue.addToEnd(next1[FSMLocation], next1[next1[FSMLocation]], next2[next1[FSMLocation]], inputSymbol[next1[FSMLocation]]);
-                                queue.addToEnd(next2[FSMLocation], next1[next2[FSMLocation]], next2[next2[FSMLocation]], inputSymbol[next2[FSMLocation]]);
+                                 queue.addToEnd(next2[FSMLocation], next1[next2[FSMLocation]], next2[next2[FSMLocation]], inputSymbol[next2[FSMLocation]]);
                             }
                            // arrayLocation--;
                         }
@@ -370,6 +322,7 @@ public class Main {
 
 
             }
+			writer.close();
 
         }
         catch (Exception e)
@@ -378,3 +331,110 @@ public class Main {
         }
     }
 }
+
+class DEque {
+
+    private int size;
+    public Node first;
+    public Node last;
+
+    public DEque()
+    {
+        first = new Node(-1,-1,-1,"SCAN");
+        last = first;
+        size = 1;
+    }
+
+
+
+    public class Node{
+        public Node next, previous;
+        int state, n1, n2;
+        String symbol;
+        public boolean right = false;
+
+        public Node(int State, int N1, int N2, String Symbol)
+        {
+            state = State;
+            n1 = N1;
+            n2 = N2;
+            symbol = Symbol;
+        }
+
+    }
+
+    public boolean empty()
+    {
+        return first == null;
+    }
+
+    public int size()
+    {
+        return size;
+    }
+
+    public void addToFront(int State, int N1, int N2, String Symbol)
+    {
+        Node temp;
+        temp = new Node(State, N1, N2, Symbol);
+
+        //check if there is already a first node
+        if(first == null)
+        {
+            first = temp;
+            last = temp;
+            size = 1;
+        }
+        else
+        {
+            temp.next = first;
+            first.previous = temp;
+            first = temp;
+            size++;
+        }
+
+    }
+
+
+    public void addToEnd(int State, int N1, int N2, String Symbol)
+    {
+        Node temp;
+        temp = new Node(State, N1, N2, Symbol);
+
+        //if the deque is currently empty
+        //make the first and last elements equal to this new node
+        if(first == null)
+        {
+            first = temp;
+            last = temp;
+            size = 1;
+        }
+        else
+        {
+            temp.previous = last;
+            last.next = temp;
+            last = temp;
+            size++;
+        }
+    }
+
+    public Node removeFirst()
+    {
+        Node temp = first;
+        first = first.next;
+        size--;
+        return temp;
+
+    }
+
+    public Node removeLast()
+    {
+        Node temp = last;
+        last = last.previous;
+        size--;
+        return temp;
+
+    }
+
+}
+
