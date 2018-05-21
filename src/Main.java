@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 
 public class Main {
 
@@ -110,6 +109,11 @@ public class Main {
                 //reset the FSM for the next line of input
                 FSMLocation = 0;
 
+                success = false;
+                arrayLocation = 0;
+                //reset the deque for the next line of input
+                queue = new DEque();
+
                 //first state, make first possible state
                 queue.addToFront(FSMLocation, next1[FSMLocation], next2[FSMLocation], inputSymbol[FSMLocation]);
 
@@ -163,7 +167,7 @@ public class Main {
 
                         //now current state is the current state
 
-                        System.out.println(currentState.symbol);
+                       // System.out.println(currentState.symbol);
                         if(currentState.symbol.equals("SCAN"))
                         {
                             break;
@@ -180,7 +184,7 @@ public class Main {
                             {
                                 FSMLocation = currentState.n1;
                                 queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
-                                System.out.println("YAY");
+                                //System.out.println("YAY");
                             }
 
 
@@ -189,23 +193,38 @@ public class Main {
                             else
                             {
 
-                                //if this isnt the first attempt at a match
+                                //if this isn't the first attempt at a match
                                 if(!queue.first.symbol.equals("SCAN") || !queue.last.symbol.equals("SCAN"))
                                 {
 
-                                    System.out.println("IM HERE");
+                                   // System.out.println("IM HERE");
                                     arrayLocation--;
+                                    DEque.Node n = queue.last;
+
+                                    //if the element before matches
+                                    if(currentState.symbol.equals(words[arrayLocation]))
+                                    {
+                                        arrayLocation--;
+                                        currentState = queue.removeLast();
+                                    }
 
                                 }
                                 //if this is the first state, check each symbol until we find a start state
                                 while (FSMLocation == 0 && queue.first.symbol.equals("SCAN") && queue.last.symbol.equals("SCAN"))
                                 {
                                     arrayLocation++;
-                                    System.out.println("START WRONG");
+
+                                    if(arrayLocation>=words.length)
+                                    {
+                                        break;
+                                    }
+                                   // System.out.println("START WRONG");
                                     if(words[arrayLocation].equals(currentState.symbol))
                                     {
+
                                         FSMLocation = next1[FSMLocation];
                                         queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
+
                                     }
                                 }
 
@@ -245,8 +264,7 @@ public class Main {
                 {
                     System.out.println("No match found");
                 }
-                //reset the deque for the next line of input
-                queue = new DEque();
+
 
 
             }
