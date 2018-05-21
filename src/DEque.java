@@ -8,6 +8,7 @@ public class DEque {
     {
         first = new Node(-1,-1,-1,"SCAN");
         last = first;
+        size = 1;
     }
 
 

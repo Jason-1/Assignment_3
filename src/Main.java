@@ -117,117 +117,125 @@ public class Main {
                 ///MAIN LOOP
                 while(!success)
                 {
-                    //if run out of input
-                    if(arrayLocation >= words.length)
-                    {
-                        break;
-                    }
 
-                    //first check if this is the final state
+
                     if(next1[FSMLocation] == 0 && next2[FSMLocation] == 0)
                     {
                         //reached end of FSM, found match, print current line
                         System.out.println(line);
                         success = true;
                     }
-
-                    //if still on first state
-                    else if(FSMLocation == 0)
+                    //if run out of input
+                    else if(arrayLocation >= words.length)
                     {
-                        //pop first element of deque
-                       currentState =  queue.removeFirst();
+                        break;
+                    }
 
 
-                       //check if SCAN is the only element left in the queue
+
+
+
+
+                    //first check if this is the final state
+
+
+
+
+
+
+
+                    //find next match
+                    else
+                    {
+
+                        if(queue.first.symbol.equals("SCAN"))
+                        {
+                            currentState = queue.removeLast();
+                            FSMLocation = currentState.state;
+                        }
+                        else
+                        {
+                            currentState = queue.removeFirst();
+                            FSMLocation = currentState.state;
+                        }
+
+
+
+                        //now current state is the current state
+
+                        System.out.println(currentState.symbol);
                         if(currentState.symbol.equals("SCAN"))
                         {
                             break;
                         }
-                       //check if it matches the current element
-                        //not a branching state so next1 and next2 match
-                        if(currentState.symbol.equals(words[arrayLocation]))
+
+                        //check if next 2 states are equal, if so check if it matches, if so add it as the possible next state, if not go back
+                        else if(currentState.n1 == currentState.n2)
                         {
-                            FSMLocation = next1[FSMLocation];
-                            queue.addToEnd(FSMLocation, next1[FSMLocation], next2[FSMLocation], inputSymbol[FSMLocation]);
-                            System.out.println("MATCH");
+
+
+
+                            //if this current state matches
+                            if(currentState.symbol.equals(words[arrayLocation]))
+                            {
+                                FSMLocation = currentState.n1;
+                                queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
+                                System.out.println("YAY");
+                            }
+
+
+
+                            //if this current state does not match
+                            else
+                            {
+
+                                //if this isnt the first attempt at a match
+                                if(!queue.first.symbol.equals("SCAN") || !queue.last.symbol.equals("SCAN"))
+                                {
+
+                                    System.out.println("IM HERE");
+                                    arrayLocation--;
+
+                                }
+                                //if this is the first state, check each symbol until we find a start state
+                                while (FSMLocation == 0 && queue.first.symbol.equals("SCAN") && queue.last.symbol.equals("SCAN"))
+                                {
+                                    arrayLocation++;
+                                    System.out.println("START WRONG");
+                                    if(words[arrayLocation].equals(currentState.symbol))
+                                    {
+                                        FSMLocation = next1[FSMLocation];
+                                        queue.addToFront(FSMLocation,next1[FSMLocation],next2[FSMLocation],inputSymbol[FSMLocation]);
+                                    }
+                                }
+
+
+                            }
+
                         }
+
+
+
+                        //else we are in a branching state
                         else
                         {
-                            //check if it is a branching state
-                            if(currentState.symbol.equals(" "))
-                            {
-                                int i = next1[FSMLocation];
-                                //add both possible next states to end of queue
-                                queue.addToEnd(i, next1[i], next2[i], inputSymbol[i]);
-                                i = next2[FSMLocation];
-                                queue.addToEnd(i, next1[i], next2[i], inputSymbol[i]);
-                                //queue.addToEnd(FSMLocation, next1[FSMLocation], next2[FSMLocation], inputSymbol[FSMLocation]);
-                            }
-                            //else doesn't match starting state
-                            else
-                            {
-                                //put possible current state back on to the front of the queue
-                                queue.addToFront(currentState.state,currentState.n1,currentState.n2,currentState.symbol);
-                                System.out.println("HELLO");
-                            }
-
-                        }
-                    }
-                    //somewhere in the FSM, check for current states, if none pop next states onto front and check through them
-                    else
-                    {
-
-
-                        //No current state, pop the two next states
-                        //means we're in a branching state
-                        if(queue.first.symbol.equals("SCAN"))
-                        {
-
-                            //No more states, failed to find match
-                            if(queue.last.symbol.equals("SCAN"))
-                            {
-                                System.out.println("OH NO");
-                            }
-                            //pop 1 state from end to possible current states
-                            else
-                            {
-                                currentState = queue.removeLast();
-
-                                //if this is a branching state
-                                //put as next states
-                                if(currentState.symbol.equals(" "))
-                                {
-                                    int i = currentState.state;
-                                    i = next1[i];
-                                    queue.addToFront(i,next1[i],next2[i],inputSymbol[i]);
-
-                                    i = next2[currentState.state];
-                                    queue.addToEnd(i,next1[i],next2[i],inputSymbol[i]);
-                                }
-                                //not a branching state, check input
-                                else
-                                {
-                                    //if match
-                                    if(currentState.symbol.equals(inputSymbol[FSMLocation]))
-                                    {
-                                        System.out.println("Match in middle");
-                                    }
-                                    else
-                                    {
-                                        System.out.println("No Match in middle");
-                                    }
-
-                                }
-                                System.out.println("Symbol: " + currentState.symbol);
-                            }
+                            arrayLocation--;
+                            queue.addToEnd(next1[FSMLocation],next1[next1[FSMLocation]],next2[next1[FSMLocation]],inputSymbol[next1[FSMLocation]]);
+                            queue.addToEnd(next2[FSMLocation],next1[next2[FSMLocation]],next2[next2[FSMLocation]],inputSymbol[next2[FSMLocation]]);
 
                         }
 
                     }
+
+
 
 
                     //increments array counter
                     arrayLocation++;
+
+
+
+
 
                 }
 
