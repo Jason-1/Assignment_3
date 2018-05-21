@@ -1,22 +1,29 @@
 public class DEque {
 
+    private int size;
+    public Node first;
+    public Node last;
+
     public DEque()
     {
-
+        first = new Node(-1,-1,-1,"SCAN");
+        last = first;
     }
 
-    private int size;
-    private Node first;
-    private Node last;
+
 
     public class Node{
         public Node next, previous;
         int state, n1, n2;
         String symbol;
+        public boolean right = false;
 
         public Node(int State, int N1, int N2, String Symbol)
         {
-
+            state = State;
+            n1 = N1;
+            n2 = N2;
+            symbol = Symbol;
         }
 
     }
@@ -41,7 +48,7 @@ public class DEque {
         {
             first = temp;
             last = temp;
-            size = 0;
+            size = 1;
         }
         else
         {
@@ -65,7 +72,7 @@ public class DEque {
         {
             first = temp;
             last = temp;
-            size = 0;
+            size = 1;
         }
         else
         {
@@ -80,6 +87,15 @@ public class DEque {
     {
         Node temp = first;
         first = first.next;
+        size--;
+        return temp;
+
+    }
+
+    public Node removeLast()
+    {
+        Node temp = last;
+        last = last.previous;
         size--;
         return temp;
 
